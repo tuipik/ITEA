@@ -104,11 +104,15 @@ def flatten(seq):
 class call_count():
 	def __init__(self, function):
 		self.function = function
-		self.call_count = 0
+		self._call_count = 0
 
 	def __call__(self, *args, **kwargs):
-		self.call_count += 1
+		self._call_count += 1
 		return self.function(*args, **kwargs)
+
+	@property
+	def call_count(self):
+		return self._call_count
 
 
 @call_count
