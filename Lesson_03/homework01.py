@@ -99,26 +99,18 @@ def flatten(seq):
 		return [seq]
 
 
-def call_count():
-	"""
-	Декоратор, подсчитывающий количество вызовов задекорированной функции.
-
-	Пример использования:
-
-	@call_count
-	def add(a, b):
-		return a + b
-
-	>>> add.call_count
-	0
-	>>> add(1, 2)
-	3
-	>>> add.call_count
-	1
-
-	Подсказки по реализации: функторы, @property
-
-	"""
 
 
+class call_count():
+	def __init__(self, function):
+		self.function = function
+		self.call_count = 0
 
+	def __call__(self, *args, **kwargs):
+		self.call_count += 1
+		return self.function(*args, **kwargs)
+
+
+@call_count
+def add(a, b):
+	return a + b
