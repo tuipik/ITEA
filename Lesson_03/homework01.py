@@ -50,7 +50,7 @@ def gcd(a, b):
 	return result[-2]
 
 
-def fib(a = 15):
+def fib(num = 15):
 	"""
 	Генератор для ряда Фибоначчи
 
@@ -64,14 +64,14 @@ def fib(a = 15):
 	  ..
 
 	"""
-	fibo_list = []
+	count = 0
+	first_num, next_num = 1, 1
+	while count < num:
+		yield first_num
+		first_num, next_num = next_num, first_num + next_num
+		count += 1
 
-	for i in range(1, a + 1):
-		if len(fibo_list) < 2:
-			fibo_list += [i]*2
-		else:
-			fibo_list += [fibo_list[-1] + fibo_list[-2]]
-	return fibo_list
+
 
 
 def flatten(seq):
