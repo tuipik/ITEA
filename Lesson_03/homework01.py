@@ -88,16 +88,24 @@ def flatten(seq):
 	>>> flatten([(1, 2), (3, 4)])
 	[1, 2, 3, 4]
 	"""
-	if type(seq) is list or type(seq) is tuple:
-		if len(seq) > 1:
-			return flatten(seq[0]) + flatten(seq[1:])
-		elif seq == []:
-			return seq
-		else:
-			return flatten(seq[0]) + []
-	else:
-		return [seq]
+	# if type(seq) is list or type(seq) is tuple:
+	# 	if len(seq) > 1:
+	# 		return flatten(seq[0]) + flatten(seq[1:])
+	# 	elif seq == []:
+	# 		return seq
+	# 	else:
+	# 		return flatten(seq[0]) + []
+	# else:
+	# 	return [seq]
 
+	from collections import Sequence
+	a = []
+	for e in seq:
+		if isinstance(e, Sequence):
+			a.extend(flatten(seq))
+		else:
+			a.append(e)
+	return a
 
 
 

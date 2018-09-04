@@ -4,10 +4,8 @@ URL shortener.
 Supported schemes: http, https.
 """
 
-from django.conf import settings
-from django.core.cache import cache
-from django.conf.urls import url
-from django.http import HttpResponse
+import string
+import random
 
 
 # Задание 2. URL shortener
@@ -59,7 +57,8 @@ def random_key():
     Минимальная длина ключа - 5 символов. Для генерации случайных
     последовательностей вы можете воспользоваться библиотекой random.
     """
-    pass
+    return ''.join(random.choice(string.ascii_letters + string.digits) \
+                   for _ in range(random.randrange(5, 15)))
 
 
 def index(request):
