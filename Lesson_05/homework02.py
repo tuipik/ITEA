@@ -3,7 +3,11 @@ URL shortener.
 
 Supported schemes: http, https.
 """
+
+from django.conf import settings
+from django.core.cache import cache
 from django.conf.urls import url
+from django.http import HttpResponse
 import string
 import random
 
@@ -115,11 +119,11 @@ def urlstats(request, key):
 urlpatterns = [
     url(r'^$', index),
     # http://localhost:8000/shorten/<url>    
-    url(r'shorten/(.+)', shorten),
+    url(r'shorten/(.+)$', shorten),
+    # http://localhost:8000/urlstats/<key>    
+    url(r'urlstats/([\w\d]+)$', urlstats),
     # http://localhost:8000/<key>
     url(r'([\w\d]+)', redirect_view),
-    # http://localhost:8000/urlstats/<key>    
-    url(r'urlstats/([\w\d]+)', urlstats),
 ]
 
 
