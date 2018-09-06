@@ -3,9 +3,10 @@ URL shortener.
 
 Supported schemes: http, https.
 """
-
+from django.conf.urls import url
 import string
 import random
+
 
 
 # Задание 2. URL shortener
