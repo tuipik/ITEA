@@ -10,6 +10,8 @@ from django.conf.urls import url
 from django.http import HttpResponse
 import string
 import random
+import urllib.parse
+from django.shortcuts import redirect
 
 
 
@@ -50,84 +52,96 @@ import random
 
 
 if not settings.configured:
-    settings.configure(
-        DEBUG=True,
-        ROOT_URLCONF=__name__,
-    )
+	settings.configure(
+		DEBUG=True,
+		ROOT_URLCONF=__name__,
+	)
 
-
+new_key = ''
 def random_key():
-    """
-    Случайный короткий ключ, состоящий из цифр и букв.
-    Минимальная длина ключа - 5 символов. Для генерации случайных
-    последовательностей вы можете воспользоваться библиотекой random.
-    """
-    return ''.join(random.choice(string.ascii_letters + string.digits) \
-                   for _ in range(random.randrange(5, 15)))
+	"""
+	Случайный короткий ключ, состоящий из цифр и букв.
+	Минимальная длина ключа - 5 символов. Для генерации случайных
+	последовательностей вы можете воспользоваться библиотекой random.
+	"""
+	return ''.join(random.choice(string.ascii_letters + string.digits) \
+				   for _ in range(random.randrange(5, 15)))
 
 
 def index(request):
-    """
-    Index. Главная страница
-    """
-    return HttpResponse(__doc__)
+	"""
+	Index. Главная страница
+	"""
+	return HttpResponse('<h1> This is the main page </h1>')
 
 
 def shorten(request, url):
-    """
-    1. Проверяем URL. Допускаются следующие схемы: http, https
-    Подсказка: разобрать URL можно функцией urllib.parse.urlparse
-    Если URL не прошел проверку - редирект на главную.
+	"""
+	1. Проверяем URL. Допускаются следующие схемы: http, https
+	Подсказка: разобрать URL можно функцией urllib.parse.urlparse
+	Если URL не прошел проверку - редирект на главную.
 
-    Если URL прошел проверку:
+	Если URL прошел проверку:
 
-    2. Сохраняем URL в кеш со сгенерированным ключом:
+	2. Сохраняем URL в кеш со сгенерированным ключом:
 
-    cache.add(key, url)
+	cache.add(key, url)
 
-    4. Отдаем успешный ответ с кодом в теле ответа.
-    Удобно, если это будет кликабельная ссылка (HTML тег 'a') вида
-    <a href="http://localhost:8000/ключ">ключ</a>
-    """
-    pass
+	4. Отдаем успешный ответ с кодом в теле ответа.
+	Удобно, если это будет кликабельная ссылка (HTML тег 'a') вида
+	<a href="http://localhost:8000/ключ">ключ</a>
+	"""
+	razbor_url = urllib.parse.urlparse(url)
+	print(razbor_url)
+	if razbor_url.scheme == 'http' or razbor_url.scheme == 'https':
+		new_key = razbor_url.netloc + '/' + random_key()
+		print(new_key)
+		cache.add(new_key, url)
+		print(cache._cache)
+		return HttpResponse(new_key)
+	# else: HttpResponse(index)										TODO: redirect to index
 
 
 def redirect_view(request, key):
-    """
-    Редирект
+	"""
+	Редирект
 
-    Функция обрабатывает сокращенный URL вида http://localhost:8000/ключ
-    Ищем ключ в кеше (cache.get). Если ключ не найден, редиректим на главную страницу (/)
-    Если найден, редиректим на полный URL, сохраненный под данным ключом.
-    Для редиректа можете воспользоваться вспомогательной функцией
-    django.shortcuts.redirect(redirect_to) или классом-наследником HttpResponse
-    """
-    pass
+	Функция обрабатывает сокращенный URL вида http://localhost:8000/ключ
+	Ищем ключ в кеше (cache.get). Если ключ не найден, редиректим на главную страницу (/)
+	Если найден, редиректим на полный URL, сохраненный под данным ключом.
+	Для редиректа можете воспользоваться вспомогательной функцией
+	django.shortcuts.redirect(redirect_to) или классом-наследником HttpResponse
+	"""
+	razbor_url = urllib.parse.urlparse(key)
+	if razbor_url.netloc + razbor_url.path in cache._cache:
+		return redirect()
+	pass
+
 
 
 def urlstats(request, key):
-    """
-    (Опционально)
+	"""
+	(Опционально)
 
-    Реализуйте счетчик кликов на сокращенные ссылки.
-    В теле ответа функция должна возращать количество
-    переходов по данному коду.
-    """
-    pass
+	Реализуйте счетчик кликов на сокращенные ссылки.
+	В теле ответа функция должна возращать количество
+	переходов по данному коду.
+	"""
+	pass
 
 
 urlpatterns = [
-    url(r'^$', index),
-    # http://localhost:8000/shorten/<url>    
-    url(r'shorten/(.+)$', shorten),
-    # http://localhost:8000/urlstats/<key>    
-    url(r'urlstats/([\w\d]+)$', urlstats),
-    # http://localhost:8000/<key>
-    url(r'([\w\d]+)', redirect_view),
+	url(r'^$', index),
+	# http://localhost:8000/shorten/<url>
+	url(r'shorten/(.+)$', shorten),
+	# http://localhost:8000/urlstats/<key>
+	url(r'urlstats/([\w\d]+)$', urlstats),
+	# http://localhost:8000/<key>
+	url(r'([\w\d]+)', redirect_view),
 ]
 
 
 if __name__ == '__main__':
-    import sys
-    from django.core.management import execute_from_command_line
-    execute_from_command_line(sys.argv)
+	import sys
+	from django.core.management import execute_from_command_line
+	execute_from_command_line(sys.argv)
