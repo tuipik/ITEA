@@ -57,7 +57,7 @@ if not settings.configured:
 		ROOT_URLCONF=__name__,
 	)
 
-new_key = ''
+
 def random_key():
 	"""
 	Случайный короткий ключ, состоящий из цифр и букв.
@@ -94,7 +94,7 @@ def shorten(request, url):
 	razbor_url = urllib.parse.urlparse(url)
 	print(razbor_url)
 	if razbor_url.scheme == 'http' or razbor_url.scheme == 'https':
-		new_key = razbor_url.netloc + '/' + random_key()
+		new_key = random_key()
 		print(new_key)
 		cache.add(new_key, url)
 		print(cache._cache)
@@ -113,7 +113,7 @@ def redirect_view(request, key):
 	django.shortcuts.redirect(redirect_to) или классом-наследником HttpResponse
 	"""
 	razbor_url = urllib.parse.urlparse(key)
-	if razbor_url.netloc + razbor_url.path in cache._cache:
+	if key in cache._cache:
 		return redirect()
 	pass
 
