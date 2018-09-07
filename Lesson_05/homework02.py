@@ -92,14 +92,12 @@ def shorten(request, url):
 	<a href="http://localhost:8000/ключ">ключ</a>
 	"""
 	razbor_url = urllib.parse.urlparse(url)
-	print(razbor_url)
+
 	if razbor_url.scheme == 'http' or razbor_url.scheme == 'https':
 		new_key = random_key()
-		print(new_key)
 		cache.add(new_key, url)
-		print(cache._cache)
-		return HttpResponse(new_key)
-	# else: HttpResponse(index)										TODO: redirect to index
+		return HttpResponse('<a href="http://localhost:8000/{0}">{0}</a>'.format(new_key))
+	else: return redirect('http://localhost:8000')
 
 
 def redirect_view(request, key):
@@ -112,8 +110,9 @@ def redirect_view(request, key):
 	Для редиректа можете воспользоваться вспомогательной функцией
 	django.shortcuts.redirect(redirect_to) или классом-наследником HttpResponse
 	"""
-
-	return redirect(cache.get(key))
+	if cache.get(key) == None:
+		return redirect('http://localhost:8000')
+	else: return redirect(cache.get(key))
 
 
 
