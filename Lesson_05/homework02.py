@@ -112,10 +112,9 @@ def redirect_view(request, key):
 	Для редиректа можете воспользоваться вспомогательной функцией
 	django.shortcuts.redirect(redirect_to) или классом-наследником HttpResponse
 	"""
-	razbor_url = urllib.parse.urlparse(key)
-	if key in cache._cache:
-		return redirect()
-	pass
+
+	return redirect(cache.get(key))
+
 
 
 
