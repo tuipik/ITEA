@@ -97,8 +97,10 @@ def shorten(request, url):
 		new_key = random_key()
 		cache.add(new_key, url)
 		return HttpResponse('<a href="http://localhost:8000/{0}">{0}</a>'.format(new_key))
-	else: return redirect('http://localhost:8000')
+	else: return redirect('/')
 
+
+counter = {}
 
 def redirect_view(request, key):
 	"""
@@ -111,8 +113,15 @@ def redirect_view(request, key):
 	django.shortcuts.redirect(redirect_to) или классом-наследником HttpResponse
 	"""
 	if cache.get(key) == None:
-		return redirect('http://localhost:8000')
-	else: return redirect(cache.get(key))
+		return redirect('/')
+	else:
+		if key in counter:
+			counter[key] += 1
+		else:
+			counter[key] = 1
+
+		return redirect(cache.get(key))
+
 
 
 
@@ -125,7 +134,10 @@ def urlstats(request, key):
 	В теле ответа функция должна возращать количество
 	переходов по данному коду.
 	"""
-	pass
+	if key in counter:
+		return HttpResponse(counter[key])
+	else:
+		return HttpResponse('0')
 
 
 urlpatterns = [
