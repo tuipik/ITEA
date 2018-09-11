@@ -19,8 +19,24 @@
 # Keys must be strings and appear in sorted order (sorted as raw strings, not alphanumerics).
 
 def encode(val):
-    pass
+	if type(val) == str:
+		result = str(len(val)) + ':' + val
+		return result
+
+	elif type(val) == int:
+		result = 'i' + str(val) + 'e'
+		return result
+
+	elif type(val) == list:
+		result =
+		return result
+
 
 
 def decode(val):
     pass
+
+
+print(encode('What happens here?'))
+print(encode(-3))
+print(encode(['spam', 'eggs']))
