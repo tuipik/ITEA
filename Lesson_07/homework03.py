@@ -20,23 +20,92 @@
 
 def encode(val):
 	if type(val) == str:
-		result = str(len(val)) + ':' + val
-		return result
+		return str_encode(val)
 
 	elif type(val) == int:
-		result = 'i' + str(val) + 'e'
-		return result
+		return int_encode(val)
 
 	elif type(val) == list:
-		result =
-		return result
+		return list_encode(val)
+
+	elif type(val) == dict:
+		return dict_encode(val)
+
+	else: raise TypeError('This type of argument can`t be encoded')
+
+def str_encode(val):
+	result = str(len(val)) + ':' + val
+	return result
+
+def int_encode(val):
+	result = 'i' + str(val) + 'e'
+	return result
+
+def list_encode(val):
+	result = str()
+	for item in val:
+		result += str_encode(item)
+	final_result = 'l' + result + 'e'
+	return final_result
+
+
+def dict_encode(val):
+	result = str()
+	for key, value in val.items():
+		if type(value) == str:
+			result += str_encode(key)
+			result += str_encode(value)
+		elif type(value) == list:
+			result += str_encode(key)
+			result += list_encode(value)
+	final_result = 'd' + result + 'e'
+	return final_result
 
 
 
+import string
 def decode(val):
-    pass
+	if val[0] in string.digits:
+		return str_decode(val)
+	elif val[0] == 'i':
+		return int_decode(val)
+	elif val[0] == 'l':
+		return list_decode(val)
+	elif val[0] == 'd':
+		return dict_decode(val)
+	else: raise TypeError('This type of argument can`t be decoded')
+
+def str_decode(val):
+	return val[2:]
+
+def int_decode(val):
+	return int(val.lstrip('i').rstrip('e'))
+
+def list_decode(val):
+	razbor = val.split(':')
+	result = []
+	del razbor[0]
+	for item in razbor:
+		item = list(item)
+		while item[-1] in string.digits:
+			del item[-1]
+		for_item = ''.join(item)
+		result.append(for_item)
+	return result
+
+def dict_decode(val):
 
 
-print(encode('What happens here?'))
-print(encode(-3))
-print(encode(['spam', 'eggs']))
+
+# print(decode('9:sdvsdg vs'))
+# print(decode('i-03e'))
+# print(decode('l4:spam4:eggs12:papandopulose'))
+
+
+
+
+# print(encode('sdvsdg vs'))
+# print(encode(-3))
+# print(encode(['spam', 'eggs', 'papandopulos']))
+print(encode({'cow': 'moo', 'spam': 'eggs'}))
+print(encode({'spam': ['a', 'b']}))
