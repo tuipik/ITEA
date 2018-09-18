@@ -18,94 +18,54 @@
 # For example, d3:cow3:moo4:spam4:eggse corresponds to {'cow': 'moo', 'spam': 'eggs'}
 # Keys must be strings and appear in sorted order (sorted as raw strings, not alphanumerics).
 
+from django.conf import settings
+
+if not settings.configured:
+	settings.configure(
+		# DEBUG=True,
+		# ROOT_URLCONF=name,
+	)
+
+
+
 def encode(val):
-	if type(val) == str:
-		return str_encode(val)
-
-	elif type(val) == int:
-		return int_encode(val)
-
-	elif type(val) == list:
-		return list_encode(val)
-
+	if type(val) == int:
+		return b'i' + bytes(str(val), 'utf-8') + b'e'
+	elif type(val) == str:
+		return bytes(str(len(val)) + ':' + val, 'utf-8')
 	elif type(val) == dict:
-		return dict_encode(val)
-
-	else: raise TypeError('This type of argument can`t be encoded')
-
-def str_encode(val):
-	result = str(len(val)) + ':' + val
-	return result
-
-def int_encode(val):
-	result = 'i' + str(val) + 'e'
-	return result
-
-def list_encode(val):
-	result = str()
-	for item in val:
-		result += str_encode(item)
-	final_result = 'l' + result + 'e'
-	return final_result
+		keys = list(val.keys())
+		keys.sort()
+		end = b'd'
+		for i in keys:
+			if type(i) == str:
+				end += encode(i)
+			end += encode(val[i])
+		end += b'e'
+		return end
+	elif type(val) == list:
+		end = b'l'
+		for i in val:
+			end += encode(i)
+		end += b'e'
+		return end
 
 
-def dict_encode(val):
-	result = str()
-	for key, value in val.items():
-		if type(value) == str:
-			result += str_encode(key)
-			result += str_encode(value)
-		elif type(value) == list:
-			result += str_encode(key)
-			result += list_encode(value)
-	final_result = 'd' + result + 'e'
-	return final_result
-
-
-
-import string
 def decode(val):
-	if val[0] in string.digits:
-		return str_decode(val)
-	elif val[0] == 'i':
-		return int_decode(val)
-	elif val[0] == 'l':
-		return list_decode(val)
-	elif val[0] == 'd':
-		return dict_decode(val)
-	else: raise TypeError('This type of argument can`t be decoded')
-
-def str_decode(val):
-	return val[2:]
-
-def int_decode(val):
-	return int(val.lstrip('i').rstrip('e'))
-
-def list_decode(val):
-	razbor = val.split(':')
-	result = []
-	del razbor[0]
-	for item in razbor:
-		item = list(item)
-		while item[-1] in string.digits:
-			del item[-1]
-		for_item = ''.join(item)
-		result.append(for_item)
-	return result
-
-def dict_decode(val):
-
-
+	pass
 
 # print(decode('9:sdvsdg vs'))
-# print(decode('i-03e'))
-# print(decode('l4:spam4:eggs12:papandopulose'))
-
-
-
-
+# print(decode('i-0653e'))
+# print(decode('l4:spami-3345e4:eggs12:papandopulosli33ei-6ei0eee'))
+# print(decode('d3:cow3:moo4:spam4:eggse'))
+# print(decode('d4:spaml1:a1:bee'))
+# print(decode('d4:spaml4:eggs5:applee3:vool4:lark5:argsee4:wool3:cow2:xo4:tezee'))
+#
+#
+#
 # print(encode('sdvsdg vs'))
 # print(encode(-3))
-# print(encode(['spam', 'eggs', 'papandopulos']))
-print(encode({'cow': 'moo', 'spam': 'eggs'}))
-print(encode({'spam': ['a', 'b']}))
+# print(encode(['spam', -3345, 'eggs', 'papandopulos', [33, -6, 0]]))
+# print(encode({b'cow': 'moo', b'spam': 'eggs'}))
+# print(encode({b'spam': ['a', 'b']}))
+# print(encode({b'spam': ['eggs', 'apple'], b'voo': ['lark', 'argse'], b'wool': b'cow', b'xo': b'teze'}))
