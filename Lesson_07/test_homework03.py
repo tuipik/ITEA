@@ -1,4 +1,5 @@
 from hypothesis import given, example
+from hypothesis import HealthCheck
 from hypothesis.strategies import binary,\
     dictionaries, integers, lists, one_of, recursive, text
 
@@ -48,10 +49,12 @@ def test_list(l):
 # Dictionaries are encoded as a 'd' followed by a list of alternating keys
 # and their corresponding values followed by an 'e'.
 # For example, d3:cow3:moo4:spam4:eggse corresponds to {'cow': 'moo', 'spam': 'eggs'}
+HealthCheck.all()
 @given(recursive(SIMPLE_TYPES,
                  lambda t: dictionaries(binary(), one_of(lists(t), t))))
 @example({b'cow': b'moo', b'spam': b'eggs'})
 @example({b'spam': [b'a', b'b']})
+
 def test_dict(d):
     assert decode(encode(d)) == d
 
