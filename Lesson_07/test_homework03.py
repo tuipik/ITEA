@@ -1,11 +1,11 @@
 from hypothesis import given, example
-from hypothesis import HealthCheck
+from hypothesis import HealthCheck, settings
 from hypothesis.strategies import binary,\
     dictionaries, integers, lists, one_of, recursive, text
 
 from homework03 import encode, decode
 
-
+settings.suppres_health_check = HealthCheck.all()
 """http://www.bittorrent.org/beps/bep_0003.html"""
 
 
@@ -49,7 +49,7 @@ def test_list(l):
 # Dictionaries are encoded as a 'd' followed by a list of alternating keys
 # and their corresponding values followed by an 'e'.
 # For example, d3:cow3:moo4:spam4:eggse corresponds to {'cow': 'moo', 'spam': 'eggs'}
-HealthCheck.all()
+
 @given(recursive(SIMPLE_TYPES,
                  lambda t: dictionaries(binary(), one_of(lists(t), t))))
 @example({b'cow': b'moo', b'spam': b'eggs'})

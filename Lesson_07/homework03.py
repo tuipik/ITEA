@@ -14,7 +14,7 @@ def encode(val):
 		return b'i' + bytes(str(val), 'utf-8') + b'e'
 
 	elif type(val) == str:
-		return bytes(str(len(val)) + ':' + val, 'utf-8')
+		return bytes(str(len(val.encode('utf-8'))) + ':' + val, 'utf-8')
 
 	elif type(val) == bytes:
 		return bytes(str(len(val)), 'utf-8') + b':' + val
@@ -152,7 +152,7 @@ def decode(val):
 print(decode(b'10:sdvssdg vs'))
 print(decode(b'i-0653e'))
 print(decode(b'1:\x80'))
-# print(decode(b'1:\xc2\x80'))
+print(decode(encode('\x80')))
 
 print(decode(b'l4:spam4:eggsd4:wool3:cowee'))
 print(decode(b'l4:spami3345e4:eggs53:papandopusvdvsewwwwwwwwwwwwwwwwwwwscscvsvseeeeeeeelosli33ei-6ei0eee'))
