@@ -23,7 +23,7 @@ from threading import Thread
 
 
 class DistributedExecutor(Executor):
-    def __init__(addresses=None):
+    def __init__(self, addresses=None):
         """
         Аргументы:
 
