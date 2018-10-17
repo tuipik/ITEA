@@ -39,17 +39,19 @@ class DistributedExecutor(Executor):
         """
         self.addresses = addresses
 
+
+
     def submit(self, *args, **kwargs): #(self, fn, *args, **kwargs):
         """ См. concurrent.futures.Executor.submit() """
         conn = socket()
         conn.connect((HOST, PORT))
         conn.send(dumps(args))
         data = b""
-        # tmp = conn.recv(BUFSIZE)
-        # while tmp:
-        #     data += tmp
-        #     tmp = conn.recv(BUFSIZE)
-        # print(data.decode("utf-8"))
+        tmp = conn.recv(BUFSIZE)
+        while tmp:
+            data += tmp
+            tmp = conn.recv(BUFSIZE)
+        print(data.decode("utf-8"))
         conn.close()
 
 
